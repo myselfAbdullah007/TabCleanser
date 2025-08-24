@@ -1,104 +1,75 @@
 # Tab Cleanser
 
-A simple Chrome and Firefox extension that deletes all cookies from all domains with a single click.
+<div align="center">
+  <img src="icons/icon128.png" alt="Tab Cleanser Icon" width="128" height="128">
+  <br>
+  <strong>A simple Chrome and Firefox extension that deletes all cookies from all domains with a single click.</strong>
+</div>
 
-## Features
+## What it does
 
-- **One-Click Cookie Deletion**: Click the extension icon to clear all cookies from all domains
-- **JavaScript API**: Programmatically clear cookies from any webpage
-- **Toast Notifications**: Get instant feedback when cookies are cleared
-- **Privacy Focused**: Useful for automated testing and privacy protection
-- **Cross-Browser**: Works with Chrome, Edge, and Firefox
+Tab Cleanser helps you clear all cookies from your browser instantly. This is useful for:
+- Privacy protection
+- Testing websites
+- Clearing login sessions
+- Removing tracking cookies
 
-## Installation
+## How to install
 
 ### Chrome/Edge
 1. Go to `chrome://extensions/`
-2. Enable "Developer mode" (toggle in top right)
+2. Turn on "Developer mode" (toggle in top right)
 3. Click "Load unpacked"
-4. Select the Extension folder containing `manifest.json`
-5. Verify "Tab Cleanser" appears in the extensions list
+4. Select the Extension folder
+5. The Tab Cleanser icon should appear in your browser toolbar
 
 ### Firefox
 1. Go to `about:addons`
 2. Click the gear icon → "Debug Add-ons"
 3. Click "Load Temporary Add-on"
 4. Select the `manifest.json` file from the Extension folder
-5. Verify "Tab Cleanser" appears in the list
+5. The Tab Cleanser icon should appear in your browser toolbar
 
-## Usage
+## How to use
 
-### Method 1: Extension Icon Click
-Click the Tab Cleanser extension icon in your browser toolbar to delete all cookies from all domains. You'll see a toast notification confirming the action.
+### Method 1: Click the extension icon
+1. Look for the Tab Cleanser icon in your browser toolbar
+2. Click it once
+3. You'll see a notification saying "All cookies cleared!"
+4. All cookies from all websites are now deleted
 
-### Method 2: JavaScript API (All Domains)
-Use JavaScript to delete all cookies from all domains via the extension API:
+### Method 2: Use the JavaScript command
+1. Open any website
+2. Press F12 to open developer tools
+3. Go to the Console tab
+4. Type: `window.postMessage({ type: "CLEAR_COOKIES_EXTENSION_API" }, "*");`
+5. Press Enter
+6. You'll see a green notification on the page saying "All cookies cleared!"
 
-```javascript
-window.postMessage({ type: "CLEAR_COOKIES_EXTENSION_API" }, "*");
-```
+## What happens when you use it
 
-### Method 3: JavaScript API (Current Domain Only)
-Use JavaScript to delete cookies visible to JavaScript for the current domain:
+- All cookies from all websites are deleted
+- You'll be logged out of all websites
+- You'll see a notification confirming the action
+- The extension works on any website
 
-```javascript
-window.postMessage({ type: "CLEAR_COOKIES_DOCUMENT" }, "*");
-```
+## Browser support
 
-### Receive Notifications
-Listen for notifications when cookies have been cleared:
+- Chrome 88 or newer
+- Edge 88 or newer  
+- Firefox 109 or newer
 
-```javascript
-window.addEventListener("message", function (event) {
-    if (event.data.type && (event.data.type === "COOKIES_CLEARED_VIA_EXTENSION_API")) {
-        // Cookies have been cleared via extension API
-        console.log("All cookies cleared!");
-    }
-});
-```
+## Troubleshooting
 
-## File Structure
+If the extension doesn't work:
+1. Make sure it's installed properly
+2. Check that the extension is enabled in your browser
+3. Try clicking the extension icon again
+4. Check if you see any error messages
 
-```
-Extension/
-├── manifest.json          # Extension manifest
-├── background.js          # Background service worker
-├── content.js            # Content script for webpage integration
-├── icons/                # Extension icons
-│   ├── icon16.png
-│   ├── icon32.png
-│   ├── icon48.png
-│   └── icon128.png
-└── README.md
-```
+## Privacy
 
-## Permissions
-
-The extension requires the following permissions:
-- `cookies`: To access and delete cookies
-- `activeTab`: To interact with the current tab
-- `notifications`: To show toast notifications
-- `<all_urls>`: To work on all websites
-
-## Browser Compatibility
-
-- Chrome 88+
-- Edge 88+
-- Firefox 109+
-
-## Testing
-
-To test the extension:
-
-1. **Install the extension** following the installation steps above
-2. **Click the extension icon** in your browser toolbar
-3. **Check for toast notifications** - you should see a green notification saying "All cookies cleared!"
-4. **Test JavaScript API** on any website:
-   ```javascript
-   // Clear all cookies
-   window.postMessage({ type: "CLEAR_COOKIES_EXTENSION_API" }, "*");
-   ```
-
-## License
-
-MIT License 
+- The extension only deletes cookies
+- It doesn't collect any data
+- It doesn't track your browsing
+- All settings are stored locally on your device 
