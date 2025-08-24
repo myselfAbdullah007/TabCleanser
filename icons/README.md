@@ -1,6 +1,6 @@
 # Extension Icons
 
-This directory should contain the following icon files for the Tab Cleanser extension:
+This directory contains the following icon files for the Tab Cleanser extension:
 
 ## Required Icon Sizes
 
@@ -27,11 +27,18 @@ You can create these icons using:
 
 A simple cleaning brush or broom icon would be perfect for this extension.
 
-## Temporary Solution
+## Current Icons
 
-Until you create custom icons, you can:
-1. Use placeholder images
-2. Download free cookie/cleaning icons from icon libraries
-3. Create simple colored squares as temporary placeholders
+The extension now includes professional icons in all required sizes:
+- High-quality PNG format
+- Consistent design across all sizes
+- Optimized for browser extension display
+- Professional appearance for better user experience
 
-The extension will work without icons, but they improve the user experience and make the extension look more professional. 
+## Icon Usage
+
+These icons are automatically used by the extension in:
+- Browser toolbar (16x16, 32x32)
+- Extension management page (32x32, 48x48)
+- Extension store listings (48x48, 128x128)
+- High-resolution displays (128x128) 

@@ -1,15 +1,28 @@
 # 🧹 Tab Cleanser Extension
 
-A Chrome and Firefox extension that automatically clears cookies, local storage, session storage, and cache when tabs are closed, helping you maintain privacy and free up storage space.
+<div align="center">
+  <img src="icons/icon128.png" alt="Tab Cleanser Icon" width="128" height="128">
+  <br>
+  <strong>A Chrome and Firefox extension that automatically clears cookies, local storage, session storage, and cache when tabs are closed</strong>
+  <br>
+  <em>Helping you maintain privacy and free up storage space</em>
+  
+  <br><br>
+  
+  ![Chrome Web Store](https://img.shields.io/badge/Chrome-Extension-brightgreen?style=for-the-badge&logo=google-chrome)
+  ![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--on-orange?style=for-the-badge&logo=firefox-browser)
+  ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+  ![Version](https://img.shields.io/badge/Version-1.0.0-green?style=for-the-badge)
+</div>
 
 ## ✨ Features
 
-- **Automatic Cleaning**: Clears site data when tabs are closed
-- **Smart Domain Detection**: Only cleans data for the specific domain of the closed tab
-- **Whitelist Management**: Keep data for trusted domains
-- **Manual Cleaning**: Clean current tab's data with one click
-- **Cross-Browser Support**: Works on both Chrome and Firefox
-- **Privacy Focused**: No data collection or tracking
+- 🧹 **Automatic Cleaning**: Clears site data when tabs are closed
+- 🎯 **Smart Domain Detection**: Only cleans data for the specific domain of the closed tab
+- ⚪ **Whitelist Management**: Keep data for trusted domains
+- 🚀 **Manual Cleaning**: Clean current tab's data with one click
+- 🌐 **Cross-Browser Support**: Works on both Chrome and Firefox
+- 🔒 **Privacy Focused**: No data collection or tracking
 
 ## 🚀 Installation
 
@@ -45,14 +58,9 @@ A Chrome and Firefox extension that automatically clears cookies, local storage,
 
 ## 📋 Requirements
 
-### Icons Setup
-Before installing, you need to add icon files to the `icons/` directory:
-- `icon16.png` (16x16 pixels)
-- `icon32.png` (32x32 pixels)
-- `icon48.png` (48x48 pixels)
-- `icon128.png` (128x128 pixels)
+### Requirements
 
-See `icons/README.md` for detailed icon specifications.
+All required files are included in the extension directory. The extension is ready to install and use.
 
 ## 🎯 Usage
 
@@ -66,6 +74,8 @@ See `icons/README.md` for detailed icon specifications.
 2. **Manual Cleaning**
    - Click the extension icon
    - Click "Clean Current Tab" to immediately clear data for the current site
+
+
 
 ### Whitelist Management
 
@@ -127,11 +137,10 @@ TabCleanser/
 ├── popup.js              # Popup logic
 ├── styles.css            # Styling
 ├── icons/                # Extension icons
-│   ├── icon16.png
-│   ├── icon32.png
-│   ├── icon48.png
-│   └── icon128.png
-└── README.md             # This file
+├── test.html             # Test page
+├── package.json          # Project metadata
+├── .gitignore           # Git ignore rules
+└── README.md            # This file
 ```
 
 ### Key Functions
