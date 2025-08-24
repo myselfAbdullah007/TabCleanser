@@ -1,217 +1,86 @@
-// Background service worker for Cookie Cleaner extension
-// Handles tab closure detection and automatic data cleaning
+// Tab Cleanser - Background Service Worker
 
-// Store tab information to track domains
-const tabInfo = new Map();
+// Listen for extension icon clicks
+chrome.action.onClicked.addListener(async (tab) => {
+  try {
+    console.log('[Tab Cleanser] Extension icon clicked, deleting all cookies');
+    await deleteAllCookies();
+    console.log('[Tab Cleanser] All cookies deleted successfully');
+    
+    // Show notification to user
+    showNotification('All cookies cleared!', 'success');
+  } catch (error) {
+    console.error('[Tab Cleanser] Error deleting cookies:', error);
+    showNotification('Error clearing cookies', 'error');
+  }
+});
 
-// Default settings
-const DEFAULT_SETTINGS = {
-  enabled: true,
-  whitelist: []
-};
+// Listen for messages from content scripts
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === "CLEAR_COOKIES_EXTENSION_API") {
+    console.log('[Tab Cleanser] Received request to clear all cookies via extension API');
+    deleteAllCookies().then(() => {
+      console.log('[Tab Cleanser] All cookies cleared via extension API');
+      // Notify content script that cookies have been cleared
+      chrome.tabs.sendMessage(sender.tab.id, { type: "COOKIES_CLEARED_VIA_EXTENSION_API" });
+      // Show notification to user
+      showNotification('All cookies cleared!', 'success');
+    }).catch((error) => {
+      console.error('[Tab Cleanser] Error clearing cookies via extension API:', error);
+      showNotification('Error clearing cookies', 'error');
+    });
+    return true; // Keep the message channel open for async response
+  }
+});
 
 /**
- * Extract domain from URL
- * @param {string} url - The URL to extract domain from
- * @returns {string} The domain name
+ * Delete all cookies from all domains
  */
-function extractDomain(url) {
+async function deleteAllCookies() {
   try {
-    const urlObj = new URL(url);
-    return urlObj.hostname;
+    console.log('[Tab Cleanser] Starting to delete all cookies');
+    
+    // Get all cookies
+    const allCookies = await chrome.cookies.getAll({});
+    console.log(`[Tab Cleanser] Found ${allCookies.length} cookies to delete`);
+    
+    // Delete each cookie
+    const deletePromises = allCookies.map(async (cookie) => {
+      try {
+        const url = `${cookie.secure ? 'https' : 'http'}://${cookie.domain}${cookie.path}`;
+        await chrome.cookies.remove({
+          url: url,
+          name: cookie.name,
+          storeId: cookie.storeId
+        });
+        console.log(`[Tab Cleanser] Deleted cookie: ${cookie.name} from ${cookie.domain}`);
+      } catch (error) {
+        console.error(`[Tab Cleanser] Error deleting cookie ${cookie.name} from ${cookie.domain}:`, error);
+      }
+    });
+    
+    // Wait for all deletions to complete
+    await Promise.all(deletePromises);
+    console.log('[Tab Cleanser] All cookies deletion completed');
+    
   } catch (error) {
-    console.error('Error extracting domain from URL:', url, error);
-    return null;
+    console.error('[Tab Cleanser] Error in deleteAllCookies:', error);
+    throw error;
   }
 }
 
 /**
- * Check if domain is whitelisted
- * @param {string} domain - The domain to check
- * @param {Array} whitelist - Array of whitelisted domains
- * @returns {boolean} True if domain is whitelisted
+ * Show a simple notification to the user
  */
-function isWhitelisted(domain, whitelist) {
-  return whitelist.some(whitelistedDomain => {
-    // Exact match
-    if (whitelistedDomain === domain) return true;
-    
-    // Wildcard subdomain match (e.g., *.example.com)
-    if (whitelistedDomain.startsWith('*.')) {
-      const baseDomain = whitelistedDomain.slice(2);
-      return domain === baseDomain || domain.endsWith('.' + baseDomain);
-    }
-    
-    return false;
+function showNotification(message, type = 'info') {
+  // Create notification using Chrome's notification API
+  chrome.notifications.create({
+    type: 'basic',
+    iconUrl: 'icons/icon48.png',
+    title: 'Tab Cleanser',
+    message: message
   });
 }
 
-/**
- * Clear all data for a specific domain
- * @param {string} domain - The domain to clear data for
- */
-async function clearDomainData(domain) {
-  try {
-    console.log(`Clearing data for domain: ${domain}`);
-    
-    // Clear cookies for the domain
-    const cookies = await chrome.cookies.getAll({ domain: domain });
-    for (const cookie of cookies) {
-      await chrome.cookies.remove({
-        url: `http${cookie.secure ? 's' : ''}://${cookie.domain}${cookie.path}`,
-        name: cookie.name,
-        storeId: cookie.storeId
-      });
-    }
-    
-    // Clear browsing data for the domain
-    const origin = `https://${domain}`;
-    await chrome.browsingData.remove({
-      origins: [origin]
-    }, {
-      appcache: true,
-      cache: true,
-      cacheStorage: true,
-      cookies: true,
-      downloads: false,
-      fileSystems: true,
-      formData: true,
-      history: false,
-      indexedDB: true,
-      localStorage: true,
-      passwords: false,
-      serviceWorkers: true,
-      webSQL: true
-    });
-    
-    console.log(`Successfully cleared data for domain: ${domain}`);
-  } catch (error) {
-    console.error(`Error clearing data for domain ${domain}:`, error);
-  }
-}
-
-/**
- * Handle tab updates to track domain information
- */
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    const domain = extractDomain(tab.url);
-    if (domain) {
-      tabInfo.set(tabId, {
-        domain: domain,
-        url: tab.url
-      });
-    }
-  }
-});
-
-/**
- * Handle tab removal to trigger data cleaning
- */
-chrome.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
-  try {
-    // Get settings
-    const settings = await chrome.storage.sync.get(DEFAULT_SETTINGS);
-    
-    // Check if auto-cleaner is enabled
-    if (!settings.enabled) {
-      console.log('Auto-cleaner is disabled');
-      return;
-    }
-    
-    // Get tab information
-    const tabData = tabInfo.get(tabId);
-    if (!tabData || !tabData.domain) {
-      console.log('No domain information found for tab:', tabId);
-      return;
-    }
-    
-    // Check if domain is whitelisted
-    if (isWhitelisted(tabData.domain, settings.whitelist)) {
-      console.log(`Domain ${tabData.domain} is whitelisted, skipping cleanup`);
-      return;
-    }
-    
-    // Check if there are other tabs open for the same domain
-    const tabs = await chrome.tabs.query({});
-    const otherTabsForDomain = tabs.filter(tab => {
-      if (tab.id === tabId) return false;
-      const tabDomain = extractDomain(tab.url);
-      return tabDomain === tabData.domain;
-    });
-    
-    // Only clear data if no other tabs are open for the same domain
-    if (otherTabsForDomain.length === 0) {
-      console.log(`No other tabs open for domain ${tabData.domain}, clearing data`);
-      await clearDomainData(tabData.domain);
-    } else {
-      console.log(`${otherTabsForDomain.length} other tabs still open for domain ${tabData.domain}, skipping cleanup`);
-    }
-    
-    // Clean up tab info
-    tabInfo.delete(tabId);
-    
-  } catch (error) {
-    console.error('Error handling tab removal:', error);
-  }
-});
-
-/**
- * Handle extension installation to set default settings
- */
-chrome.runtime.onInstalled.addListener(async () => {
-  try {
-    // Set default settings if they don't exist
-    const existingSettings = await chrome.storage.sync.get();
-    const settingsToSet = {};
-    
-    if (!('enabled' in existingSettings)) {
-      settingsToSet.enabled = DEFAULT_SETTINGS.enabled;
-    }
-    
-    if (!('whitelist' in existingSettings)) {
-      settingsToSet.whitelist = DEFAULT_SETTINGS.whitelist;
-    }
-    
-    if (Object.keys(settingsToSet).length > 0) {
-      await chrome.storage.sync.set(settingsToSet);
-      console.log('Default settings initialized');
-    }
-  } catch (error) {
-    console.error('Error initializing default settings:', error);
-  }
-});
-
-// Listen for messages from popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'getSettings') {
-    chrome.storage.sync.get(DEFAULT_SETTINGS, (settings) => {
-      sendResponse(settings);
-    });
-    return true; // Indicates async response
-  }
-  
-  if (request.action === 'updateSettings') {
-    chrome.storage.sync.set(request.settings, () => {
-      sendResponse({ success: true });
-    });
-    return true; // Indicates async response
-  }
-  
-  if (request.action === 'cleanCurrentTab') {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-      if (tabs[0] && tabs[0].url) {
-        const domain = extractDomain(tabs[0].url);
-        if (domain) {
-          await clearDomainData(domain);
-          sendResponse({ success: true, domain: domain });
-        } else {
-          sendResponse({ success: false, error: 'Could not extract domain' });
-        }
-      } else {
-        sendResponse({ success: false, error: 'No active tab found' });
-      }
-    });
-    return true; // Indicates async response
-  }
-}); 
+// Log when service worker starts
+console.log('[Tab Cleanser] Background service worker started'); 
