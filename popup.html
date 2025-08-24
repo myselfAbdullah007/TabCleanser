@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tab Cleanser</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧹 Tab Cleanser</h1>
+            <p class="subtitle">Automatically clear site data when tabs close</p>
+        </div>
+
+        <!-- Main Toggle -->
+        <div class="section">
+            <div class="toggle-container">
+                <label class="toggle-label">Auto Cleaner</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="autoCleanerToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <p class="description">Automatically clear cookies, storage, and cache when closing tabs</p>
+        </div>
+
+        <!-- Clean Now Button -->
+        <div class="section">
+            <button id="cleanNowBtn" class="clean-now-btn">
+                <span class="btn-icon">🧹</span>
+                Clean Current Tab
+            </button>
+            <p class="description">Clear all data for the currently active tab's domain</p>
+        </div>
+
+        <!-- Whitelist Section -->
+        <div class="section">
+            <h3>Whitelist Manager</h3>
+            <p class="description">Domains that won't be automatically cleaned</p>
+            
+            <!-- Add Domain Form -->
+            <div class="add-domain-form">
+                <input type="text" id="domainInput" placeholder="Enter domain (e.g., example.com)" class="domain-input">
+                <button id="addDomainBtn" class="add-btn">Add</button>
+            </div>
+
+            <!-- Whitelist Display -->
+            <div class="whitelist-container">
+                <div id="whitelistItems" class="whitelist-items">
+                    <!-- Whitelist items will be populated here -->
+                </div>
+                <div id="emptyWhitelist" class="empty-whitelist">
+                    <p>No whitelisted domains</p>
+                    <p class="hint">Add domains you want to keep data for</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusMessage" class="status-message"></div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Version 1.0.0</p>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html> 

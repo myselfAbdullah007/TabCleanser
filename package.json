@@ -1,0 +1,49 @@
+{
+  "name": "tab-cleanser",
+  "version": "1.0.0",
+  "description": "A Chrome and Firefox extension that automatically clears cookies, local storage, session storage, and cache when tabs are closed",
+  "main": "background.js",
+  "scripts": {
+    "build": "echo 'Extension is ready to load in browser'",
+    "test": "echo 'Open test.html in browser to test the extension'",
+    "lint": "echo 'No linting configured - extension uses vanilla JavaScript'",
+    "package": "echo 'Extension files are ready for distribution'"
+  },
+  "keywords": [
+    "chrome-extension",
+    "firefox-extension",
+    "privacy",
+    "cookies",
+    "local-storage",
+    "cache-cleaner",
+    "browser-extension",
+    "manifest-v3"
+  ],
+  "author": "Cookie Cleaner Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/myselfAbdullah007/TabCleanser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/myselfAbdullah007/TabCleanser/issues"
+  },
+  "homepage": "https://github.com/myselfAbdullah007/TabCleanser#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "Chrome >= 88",
+    "Firefox >= 109"
+  ],
+  "manifest": {
+    "version": 3,
+    "permissions": [
+      "storage",
+      "tabs",
+      "cookies",
+      "browsingData",
+      "activeTab"
+    ]
+  }
+} 
